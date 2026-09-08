@@ -16,6 +16,9 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
   const fullName = String(formData.get("full_name") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+  const countryId = String(formData.get("country_id") || "").trim();
+  const referralCode = String(formData.get("referral_code") || "").trim();
 
   if (!email || !password) {
     return { error: "L'email et le mot de passe sont obligatoires." };
@@ -25,12 +28,19 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
     return { error: "Le mot de passe doit contenir au moins 8 caractères." };
   }
 
+  if (!countryId) {
+    return { error: "Veuillez sélectionner votre pays." };
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         full_name: fullName || undefined,
+        phone: phone || undefined,
+        country_id: countryId || undefined,
+        referral_code: referralCode || undefined,
       },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/verify-email`,
     },
@@ -41,6 +51,7 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
   }
 
   // Profile and user_settings are created automatically by Supabase triggers (Domaine 1)
+  // The trigger should pick up the metadata (full_name, phone, country_id, referral_code)
   if (data.user && !data.session) {
     return {
       success: "Inscription réussie",
