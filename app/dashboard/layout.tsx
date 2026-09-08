@@ -18,7 +18,6 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Fetch profile for the header
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
@@ -26,20 +25,17 @@ export default async function DashboardLayout({
     .single();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
-      {/* Sidebar - desktop */}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <DashboardSidebar />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="lg:pl-64 flex flex-col min-h-screen">
         <DashboardHeader
           userEmail={user.email}
           fullName={profile?.full_name as string | undefined}
           kycStatus={profile?.kyc_status as string | undefined}
         />
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
-          {children}
-        </main>
+        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );
